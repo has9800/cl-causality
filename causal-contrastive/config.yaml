@@ -1,0 +1,48 @@
+project:
+  name: causal-contrastive
+  seed: 42
+
+model:
+  name: EleutherAI/gpt-neo-2.7B
+  torch_dtype: float16
+  target_layers: [12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+contrastive:
+  margin: 1.0
+  learning_rate: 1.0e-6
+  num_epochs: 10
+  batch_size: 8
+  warmup_steps: 50
+  max_seq_length: 128
+  pooling: mean
+  distance: cosine
+  mining: hard
+
+lora:
+  enabled: true
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, v_proj]
+
+probe:
+  num_classes: 3
+  train_epochs: 20
+  lr: 1.0e-3
+  train_split: 0.8
+
+evaluation:
+  num_prompts: 50
+  traces_per_prompt: 4
+  max_new_tokens: 180
+  temperature: 0.8
+  few_shot_examples: 2
+
+nemotron:
+  model: nvidia/llama-3.1-nemotron-70b-reward
+  base_url: https://integrate.api.nvidia.com/v1
+  api_key_env: NVIDIA_API_KEY
+
+data:
+  probe_sentences: data/probe_sentences.jsonl
+  causal_prompts: prompts/causal_prompts.jsonl
